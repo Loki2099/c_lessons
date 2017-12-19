@@ -23,7 +23,12 @@ namespace BlackJack
 
 		public override string ToString()
 		{
-			return string.Format("[Suit:{0}; Value:{1}]", (int)Suit, Value);
+			return string.Format("[Suit:{0}; FaceID:{1}]", (int)Suit, FaceID);
+		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
 		}
 	}
 }

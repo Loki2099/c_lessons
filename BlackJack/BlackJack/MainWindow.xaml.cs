@@ -24,6 +24,7 @@ namespace BlackJack
 		public MainWindow()
 		{
 			InitializeComponent();
+			StartGame();
 		}
 
 		private void StartGame()
@@ -35,9 +36,13 @@ namespace BlackJack
 		private void ShuffleCards()
 		{
 			Random rnd = new Random();
-			while(cards.Count() <= 52)
+			while(cards.Count() < 52)
 			{
+				var gc = GenCard(rnd);
 
+				if(cards.Where(c => c.Equals(gc)).Any()) continue;
+				
+				cards.Add(gc);
 			}
 		}
 
@@ -45,10 +50,33 @@ namespace BlackJack
 		{
 			var fid = rnd.Next(1, 14);
 			var suit = (CardSuit)rnd.Next(1, 5);
-
-			if(fid > 1 && fid < 11) { }
-			else { }
-
+			var crd = new Cards(){Suit = suit, FaceID = fid};
+			if(fid > 1 && fid < 11) {crd.Face = fid.ToString(); crd.Value = fid;}
+			else 
+			{
+				switch (fid)
+				{
+					case 1:
+						crd.Face = "A";
+						crd.Value = 11;
+						break;
+					case 11:
+						crd.Face = "J";
+						goto case 21;
+					case 12:
+						crd.Face = "Q";
+						goto case 21;
+					case 13:
+						crd.Face = "K";
+						goto case 21;
+					case 21:
+						crd.Value = 10;
+						break;
+					default:
+						break;
+				}
+			}
+			return crd;
 		}
 	}
 }
