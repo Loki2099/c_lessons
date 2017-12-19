@@ -20,9 +20,35 @@ namespace BlackJack
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		List<Cards> cards;
 		public MainWindow()
 		{
 			InitializeComponent();
+		}
+
+		private void StartGame()
+		{
+			cards = new List<Cards>();
+			ShuffleCards();
+		}
+
+		private void ShuffleCards()
+		{
+			Random rnd = new Random();
+			while(cards.Count() <= 52)
+			{
+
+			}
+		}
+
+		private Cards GenCard(Random rnd)
+		{
+			var fid = rnd.Next(1, 14);
+			var suit = (CardSuit)rnd.Next(1, 5);
+
+			if(fid > 1 && fid < 11) { }
+			else { }
+
 		}
 	}
 }
