@@ -7,7 +7,7 @@
 		xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
 		xmlns:dxl="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
 		Title="Blackjack" Height="350" Width="525" Style="{StaticResource Default}">
-	
+		
 	<dxl:LayoutControl>
 		<dxl:LayoutGroup x:Name="headerGroup" Style="{StaticResource headerStyle}">
 			<dxe:TextEdit Text="Blackjack"/>
@@ -42,7 +42,6 @@
 		<dxl:LayoutGroup x:Name="playField" Style="{StaticResource playFieldStyle}">
 			<dxl:LayoutGroup Orientation="Vertical">
 				<dxl:FlowLayoutControl x:Name="playersCards" HorizontalAlignment="Stretch"/>
-				<Button x:Name="btnAceValue" Click="btnAceValue_Click" Visibility="Collapsed"/>
 				<dxl:LayoutGroup>
 					<Button x:Name="btnHit" Content="HIT" Click="btnHit_Click" IsEnabled="False" Style="{StaticResource controlBtnStyle}"/>
 					<Button x:Name="btnStand" Content="STAND" Click="btnStand_Click" IsEnabled="False" Style="{StaticResource controlBtnStyle}"/>

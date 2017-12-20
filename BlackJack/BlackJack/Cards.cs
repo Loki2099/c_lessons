@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BlackJack
 {
-	public enum CardSuit{H, C, D, S};
+	public enum CardSuit{H = 1, C = 2, D = 3, S = 4};
 
 	public class Cards
 	{
