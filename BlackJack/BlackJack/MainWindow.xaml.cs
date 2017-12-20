@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DevExpress.Xpf.Editors;
+using DevExpress.Xpf.LayoutControl;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,31 +22,74 @@ namespace BlackJack
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		List<Cards> cards;
+		static List<Cards> deck, PlayerHand, DealerHand;
+		static int totalPlayed, wins, deckIndex, playerShown, dealerShown;
+
 		public MainWindow()
 		{
 			InitializeComponent();
+			txtTotal.Text = string.Format("{0}", totalPlayed);
+		}
+
+		private void btnNewGame_Click(object sender, RoutedEventArgs e)
+		{
 			StartGame();
+			totalPlayed++;
 		}
 
 		private void StartGame()
 		{
-			cards = new List<Cards>();
+			PlayerHand = new List<Cards>();
+			DealerHand = new List<Cards>();
+			deck = new List<Cards>();
+			deckIndex = 0;
 			ShuffleCards();
+			DealHands();
+		}
+
+		private void btnHit_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void btnStand_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void btnAceValue_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void DealHands()
+		{
+			PlayerHand.Add(DealCard());
+			DisplayCard(playersCards, PlayerHand.Last());
+
+			DealerHand.Add(DealCard());
+			DisplayCard(dealersCards, DealerHand.Last());
+
+
+			PlayerHand.Add(DealCard());
+			DisplayCard(playersCards, PlayerHand.Last());
+
+			DealerHand.Add(DealCard());
+			DisplayCard(dealersCards);
 		}
 
 		private void ShuffleCards()
 		{
 			Random rnd = new Random();
-			cards.Add(GenCard(rnd));
+			deck.Add(GenCard(rnd));
 
-			while(cards.Count() < 52)
+			while(deck.Count() < 52)
 			{
 				var gc = GenCard(rnd);
 
-				if(cards.Where(c => c.Equals(gc)).Any()) continue;
+				if(deck.Where(c => c.Equals(gc)).Any()) continue;
 				
-				cards.Add(gc);
+				deck.Add(gc);
 			}
 		}
 
@@ -81,9 +126,43 @@ namespace BlackJack
 			return crd;
 		}
 
-		private void btnNewGame_Click(object sender, RoutedEventArgs e)
+		private static Cards DealCard()
 		{
+			var crd = deck[deckIndex];
+			deckIndex++;
+			return crd;
+		}
+
+		private void DisplayCard(FlowLayoutControl pField, Cards card = null)
+		{
+			if(card == null) pField.Children.Add(new TextEdit(){Name = "FaceDown" });
+			else pField.Children.Add(new TextEdit() {Text = string.Format("{0}{1}", card.Face, card.Suit)});
+		}
+
+		private static void DealCheck()
+		{
+			int dealerTemp = 0, playerTemp = 0;
+			DealerHand.ForEach(c => dealerTemp += c.Value);
+			PlayerHand.ForEach(c => playerTemp += c.Value);
+
+			if(dealerTemp == 21)
+			if(dealerTemp == playerTemp){ }
+			else{ }
+		}
+
+		private static void DealerCardCeck()
+		{
+			
+		}
+
+		private static void PlayerCardCheck()
+		{
+			if(PlayerHand.Last().Value == 11){ }
+
+			PlayerHand.ForEach(ph => playerShown += ph.Value);
+
 
 		}
+
 	}
 }

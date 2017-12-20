@@ -28,19 +28,27 @@
 			<dxl:LayoutGroup x:Name="playerDetail" Style="{StaticResource playerDetail}">
 				<dxe:TextEdit Text="Player"/>
 				<dxl:LayoutItem Label="Showing" Style="{StaticResource layoutItemStyle}">
-					<dxe:TextEdit Text="0"/>
+					<dxe:TextEdit x:Name="txtPlayerHand" Text="0"/>
 				</dxl:LayoutItem>
 			</dxl:LayoutGroup>
 			<dxl:LayoutGroup x:Name="dealerDetail" Style="{StaticResource dealerDetail}">
 				<dxe:TextEdit Text="Dealer"/>
 				<dxl:LayoutItem Label="Showing" Style="{StaticResource layoutItemStyle}">
-					<dxe:TextEdit Text="0"/>
+					<dxe:TextEdit x:Name="txtDealerHand" Text="0"/>
 				</dxl:LayoutItem>
 			</dxl:LayoutGroup>
 		</dxl:LayoutGroup>
 		
 		<dxl:LayoutGroup x:Name="playField" Style="{StaticResource playFieldStyle}">
-			
+			<dxl:LayoutGroup Orientation="Vertical">
+				<dxl:FlowLayoutControl x:Name="playersCards" HorizontalAlignment="Stretch"/>
+				<Button x:Name="btnAceValue" Click="btnAceValue_Click" Visibility="Collapsed"/>
+				<dxl:LayoutGroup>
+					<Button x:Name="btnHit" Content="HIT" Click="btnHit_Click" IsEnabled="False" Style="{StaticResource controlBtnStyle}"/>
+					<Button x:Name="btnStand" Content="STAND" Click="btnStand_Click" IsEnabled="False" Style="{StaticResource controlBtnStyle}"/>
+				</dxl:LayoutGroup>
+			</dxl:LayoutGroup>
+			<dxl:FlowLayoutControl x:Name="dealersCards" HorizontalAlignment="Stretch"/>
 		</dxl:LayoutGroup>
 	</dxl:LayoutControl>
 </Window>
