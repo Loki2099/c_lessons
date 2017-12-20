@@ -13,5 +13,10 @@ namespace BlackJack
 	/// </summary>
 	public partial class App : Application
 	{
+		protected override void OnStartup(StartupEventArgs e)
+		{
+			DevExpress.Xpf.Core.ApplicationThemeHelper.ApplicationThemeName = DevExpress.Xpf.Core.Theme.NoneName;
+			base.OnStartup(e);
+		}
 	}
 }

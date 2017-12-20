@@ -1,12 +1,46 @@
 ﻿<Window x:Class="BlackJack.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:BlackJack"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:BlackJack"
+		xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+		xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+		xmlns:dxl="http://schemas.devexpress.com/winfx/2008/xaml/layoutcontrol"
+		Title="Blackjack" Height="350" Width="525" Style="{StaticResource Default}">
+	
+	<dxl:LayoutControl>
+		<dxl:LayoutGroup x:Name="headerGroup" Style="{StaticResource headerStyle}">
+			<dxe:TextEdit Text="Blackjack"/>
+			<dxl:LayoutGroup Orientation="Horizontal">
+				<Button x:Name="btnNewGame" Content="Deal" Click="btnNewGame_Click"/>
+				<dxl:LayoutGroup HorizontalAlignment="Stretch" Orientation="Horizontal" VerticalAlignment="Center">
+					<dxl:LayoutItem Label="Hands Won" Style="{StaticResource layoutItemStyle}" HorizontalAlignment="Center">
+						<dxe:TextEdit Text="0" x:Name="txtWon" Style="{StaticResource genTxtStyle}"/>
+					</dxl:LayoutItem>
+					<dxl:LayoutItem Label="Total Hands Played" Style="{StaticResource layoutItemStyle}" HorizontalAlignment="Right">
+						<dxe:TextEdit Text="0" x:Name="txtTotal" Style="{StaticResource genTxtStyle}"/>
+					</dxl:LayoutItem>
+				</dxl:LayoutGroup>
+			</dxl:LayoutGroup>
+		</dxl:LayoutGroup>
+		
+		<dxl:LayoutGroup x:Name="gameDetail" Style="{StaticResource topDetailStyle}">
+			<dxl:LayoutGroup x:Name="playerDetail" Style="{StaticResource playerDetail}">
+				<dxe:TextEdit Text="Player"/>
+				<dxl:LayoutItem Label="Showing" Style="{StaticResource layoutItemStyle}">
+					<dxe:TextEdit Text="0"/>
+				</dxl:LayoutItem>
+			</dxl:LayoutGroup>
+			<dxl:LayoutGroup x:Name="dealerDetail" Style="{StaticResource dealerDetail}">
+				<dxe:TextEdit Text="Dealer"/>
+				<dxl:LayoutItem Label="Showing" Style="{StaticResource layoutItemStyle}">
+					<dxe:TextEdit Text="0"/>
+				</dxl:LayoutItem>
+			</dxl:LayoutGroup>
+		</dxl:LayoutGroup>
+		
+		<dxl:LayoutGroup x:Name="playField" Style="{StaticResource playFieldStyle}">
+			
+		</dxl:LayoutGroup>
+	</dxl:LayoutControl>
 </Window>

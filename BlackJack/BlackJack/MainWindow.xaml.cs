@@ -36,6 +36,8 @@ namespace BlackJack
 		private void ShuffleCards()
 		{
 			Random rnd = new Random();
+			cards.Add(GenCard(rnd));
+
 			while(cards.Count() < 52)
 			{
 				var gc = GenCard(rnd);
@@ -77,6 +79,11 @@ namespace BlackJack
 				}
 			}
 			return crd;
+		}
+
+		private void btnNewGame_Click(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 }
