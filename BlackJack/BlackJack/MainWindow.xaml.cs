@@ -15,7 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using System.Windows.Threading;
 
 namespace BlackJack
 {
@@ -37,14 +37,13 @@ namespace BlackJack
 		{
 			playersCards.Children.Clear();
 			dealersCards.Children.Clear();
-			StartGame();
-			totalPlayed++;
-			txtTotal.Text = string.Format("{0}", totalPlayed);
-			txtWon.Text = string.Format("{0}", wins);
+			var t = Task.Run(() => StartGame());
 		}
 
 		private void StartGame()
 		{
+			totalPlayed++;
+			UpdateStats();
 			gameOver = false;
 			PlayerHand = new List<Cards>();
 			DealerHand = new List<Cards>();
@@ -52,6 +51,11 @@ namespace BlackJack
 			deckIndex = 0;
 			ShuffleCards();
 			DealHands();
+		}
+
+		private void UpdateStats()
+		{
+			Dispatcher.Invoke(() => {txtTotal.Text = string.Format("{0}", totalPlayed); txtWon.Text = string.Format("{0}", wins);});
 		}
 
 		private void DealHands()
@@ -67,10 +71,10 @@ namespace BlackJack
 			DisplayCard(playersCards, PlayerHand.Last());
 
 			DealerHand.Add(DealCard());
-			dealersCards.Children.Add(new TextEdit() {Name = "FaceDown" });
+			Dispatcher.Invoke(() => dealersCards.Children.Add(new TextEdit() {Name = "FaceDown" }));
 			DealCheck();
 
-			if(!gameOver){btnHit.IsEnabled = true; btnStand.IsEnabled = true; }
+			if(!gameOver) Dispatcher.Invoke(() => {btnHit.IsEnabled = true; btnStand.IsEnabled = true;});
 		}
 
 		private void ShuffleCards()
@@ -130,7 +134,26 @@ namespace BlackJack
 
 		private void DisplayCard(FlowLayoutControl pField, Cards card)
 		{
-			pField.Children.Add(new TextEdit() {Text = string.Format("{0}{1}", card.Face, card.Suit)});
+			string crdSymbol = SetSuitSymbol(card.Suit);
+			var tColor = (int)card.Suit == 1 || (int)card.Suit == 3 ? Brushes.Red : Brushes.Black; 
+			Dispatcher.Invoke(() => pField.Children.Add(new TextEdit() {Text = string.Format("{0}{1}", card.Face, crdSymbol), Foreground = tColor}));
+		}
+
+		private string SetSuitSymbol(CardSuit suit)
+		{
+			switch ((int)suit)
+			{
+				case 1:
+					return "♥";
+				case 2:
+					return "♣";
+				case 3:
+					return "♦";
+				case 4:
+					return "♠";
+				default:
+					return null;
+			}
 		}
 
 		private void DealCheck()
@@ -147,9 +170,8 @@ namespace BlackJack
 				UpdateDealerShown();
 				UpdatePlayerShown();
 				
-				if(dealerTemp == playerTemp){MessageBox.Show("Push");}
-				else {MessageBox.Show("Dealer Wins");}
-
+				if(dealerTemp == playerTemp){MessageBox.Show("No Winner", "Push");}
+				else {MessageBox.Show("Dealer Wins", "Blackjack");}
 				gameOver = true;
 			}
 			else
@@ -159,19 +181,32 @@ namespace BlackJack
 
 				UpdatePlayerShown();
 				UpdateDealerShown();
-				if(playerShown == 21) {MessageBox.Show("Blackjack"); wins++; gameOver = true;}
+				if(playerShown == 21) {MessageBox.Show("Player Wins", "Blackjack"); AddWin(); gameOver = true;}
 			}
 		}
 
 		private void ShowFaceDown()
 		{
 			var c = DealerHand.Last();
-			(dealersCards.GetChildren(true).Find(cds => cds.Name.Equals("FaceDown")) as TextEdit).Text = string.Format("{0}{1}", c.Face, c.Suit);
+			var suitSymbol = SetSuitSymbol(c.Suit);
+			Dispatcher.Invoke(() => (dealersCards.GetChildren(true).Find(cds => cds.Name.Equals("FaceDown")) as TextEdit).Text = string.Format("{0}{1}", c.Face, suitSymbol));
 			dealerShown += c.Value;
 			UpdateDealerShown();
 		}
 
 		private void btnHit_Click(object sender, RoutedEventArgs e)
+		{
+			var t = Task.Run(() => PlayersTurn());
+		}
+
+		private void btnStand_Click(object sender, RoutedEventArgs e)
+		{
+			btnHit.IsEnabled = false;
+			btnStand.IsEnabled = false;
+			var t = Task.Run(() => DealersTurn());
+		}
+
+		private void PlayersTurn()
 		{
 			var crd = DealCard();
 			PlayerHand.Add(crd);
@@ -183,7 +218,7 @@ namespace BlackJack
 			else if(playerShown == 21)
 			{
 				btnHit.IsEnabled = false;
-				btnStand_Click(sender, e);
+				btnStand_Click(null, null);
 				return;
 			}
 			else
@@ -196,32 +231,20 @@ namespace BlackJack
 				}
 				else
 				{
-					MessageBox.Show("Bust");
-					btnHit.IsEnabled = false;
-					btnStand.IsEnabled = false;
+					MessageBox.Show("Dealer Wins", "Bust");
+					ShowFaceDown();
+					Dispatcher.Invoke(() => {btnHit.IsEnabled = false; btnStand.IsEnabled = false;});
 				}
 			}
+
 		}
 
-		private void btnStand_Click(object sender, RoutedEventArgs e)
+		void DealersTurn()
 		{
 			ShowFaceDown();
+			Thread.Sleep(1500);
 
-			if(dealerShown == 17 && DealerHand.Count() == 2)
-			{
-				var c = DealCard();
-				DealerHand.Add(c);
-				DisplayCard(dealersCards, c);
-				dealerShown += c.Value;
-				if(dealerShown > 21)
-				{
-					DealerHand.Where(dc => dc.Value == 11).First().Value = 1;
-					dealerShown -= 10;
-					UpdateDealerShown();
-					//Thread.Sleep(2000);
-				}
-			}
-
+			if(dealerShown == 17) Dealer17();
 
 			while (dealerShown < 17)
 			{
@@ -229,25 +252,49 @@ namespace BlackJack
 				DealerHand.Add(c);
 				DisplayCard(dealersCards, c);
 				dealerShown += c.Value;
+				if(dealerShown == 17) Dealer17();
 				UpdateDealerShown();
-				//Thread.Sleep(2000);
+				Thread.Sleep(1500);
 			}
 
-			if(dealerShown > 21){MessageBox.Show("Dealer Bust"); wins++; gameOver = true; return;}
-
+			if(dealerShown > 21){MessageBox.Show("Dealer Bust", "Player Wins"); AddWin(); gameOver = true; return;}
 			if (dealerShown <= 21 && playerShown < dealerShown){ MessageBox.Show("Dealer Wins"); gameOver = true; return;}
-			if(dealerShown == playerShown){ MessageBox.Show("Push"); gameOver = true; return;}
-			if(playerShown <= 21 && playerShown > dealerShown) { MessageBox.Show("Player Wins"); wins++; gameOver = true; return;}
+			if(dealerShown == playerShown){ MessageBox.Show("No Winner", "Push"); gameOver = true; return;}
+			if(playerShown <= 21 && playerShown > dealerShown) { MessageBox.Show("Player Wins"); AddWin(); gameOver = true; return;}
+
 		}
 
+		private void Dealer17()
+		{
+			if(!DealerHand.Where(dc => dc.Value == 11).Any()) return;
+			var c = DealCard();
+			DealerHand.Add(c);
+			DisplayCard(dealersCards, c);
+			dealerShown += c.Value;
+			Thread.Sleep(1500);
+
+			if(dealerShown > 21)
+			{
+				DealerHand.Where(dc => dc.Value == 11).First().Value = 1;
+				dealerShown -= 10;
+				UpdateDealerShown();
+				Thread.Sleep(1500);
+			}
+		}
+
+		private void AddWin()
+		{
+			wins++;
+			UpdateStats();
+		}
 		private void UpdatePlayerShown()
 		{
-			txtPlayerHand.Text = string.Format("{0}", playerShown);
+			Dispatcher.Invoke(() => txtPlayerHand.Text = string.Format("{0}", playerShown));
 		}
 
 		private void UpdateDealerShown()
 		{
-			txtDealerHand.Text = string.Format("{0}", dealerShown);
+			Dispatcher.Invoke(() => txtDealerHand.Text = string.Format("{0}", dealerShown));
 		}
 	}
 }
