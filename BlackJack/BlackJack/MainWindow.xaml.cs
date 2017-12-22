@@ -187,7 +187,7 @@ namespace BlackJack
 
 		private void ShowFaceDown()
 		{
-			var c = DealerHand.Last();
+			var c = DealerHand[1];
 			var suitSymbol = SetSuitSymbol(c.Suit);
 			Dispatcher.Invoke(() => (dealersCards.GetChildren(true).Find(cds => cds.Name.Equals("FaceDown")) as TextEdit).Text = string.Format("{0}{1}", c.Face, suitSymbol));
 			dealerShown += c.Value;
@@ -217,8 +217,7 @@ namespace BlackJack
 			if(playerShown < 21) return;
 			else if(playerShown == 21)
 			{
-				btnHit.IsEnabled = false;
-				btnStand_Click(null, null);
+				Dispatcher.Invoke(() => btnStand_Click(null, null));
 				return;
 			}
 			else
@@ -254,7 +253,7 @@ namespace BlackJack
 				dealerShown += c.Value;
 				if(dealerShown == 17) Dealer17();
 				UpdateDealerShown();
-				Thread.Sleep(1500);
+				Thread.Sleep(1000);
 			}
 
 			if(dealerShown > 21){MessageBox.Show("Dealer Bust", "Player Wins"); AddWin(); gameOver = true; return;}
@@ -271,14 +270,13 @@ namespace BlackJack
 			DealerHand.Add(c);
 			DisplayCard(dealersCards, c);
 			dealerShown += c.Value;
-			Thread.Sleep(1500);
 
 			if(dealerShown > 21)
 			{
 				DealerHand.Where(dc => dc.Value == 11).First().Value = 1;
 				dealerShown -= 10;
 				UpdateDealerShown();
-				Thread.Sleep(1500);
+				Thread.Sleep(1000);
 			}
 		}
 
@@ -287,6 +285,7 @@ namespace BlackJack
 			wins++;
 			UpdateStats();
 		}
+
 		private void UpdatePlayerShown()
 		{
 			Dispatcher.Invoke(() => txtPlayerHand.Text = string.Format("{0}", playerShown));
